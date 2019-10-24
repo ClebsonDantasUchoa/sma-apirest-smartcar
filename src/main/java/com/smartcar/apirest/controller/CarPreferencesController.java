@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.smartcar.apirest.model.CarPreference;
 import com.smartcar.apirest.repository.CarPreferenceRepository;
+import com.smartcar.apirest.service.HistoricService;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +22,9 @@ public class CarPreferencesController {
 	@Autowired
 	CarPreferenceRepository carPreferenceRepository;
 	
+	@Autowired
+	HistoricService historicService;
+	
 	@GetMapping("/carpreference/findbyusername/{username}")
 	public CarPreference findCarPreferenceByUsername(@PathVariable(value="username") String username) {
 		return carPreferenceRepository.findByUsername(username);
@@ -28,7 +32,14 @@ public class CarPreferencesController {
 	
 	@PostMapping("/carpreference/save")
 	public CarPreference saveCarPreference(@RequestBody CarPreference carPreference) {
-		return carPreferenceRepository.save(carPreference);
+		CarPreference carPreferenceSaved = carPreferenceRepository.findByUsername(carPreference.getUsername());
+		if(carPreferenceSaved != null) {
+			carPreferenceSaved.replaceFields(carPreference);
+			carPreference = carPreferenceSaved;
+		}
+		carPreference = carPreferenceRepository.save(carPreference);
+		historicService.saveCarPreferenceInHistoric(carPreference);
+		return carPreferenceSaved;
 	}
 	
 	@GetMapping("carpreference/getall")

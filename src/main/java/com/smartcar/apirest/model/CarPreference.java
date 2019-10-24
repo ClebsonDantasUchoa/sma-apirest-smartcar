@@ -16,9 +16,9 @@ public class CarPreference implements Serializable{
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
 	
-	public String username;
-	public int steeringWheelHeight;
-	public int seatTilt;
+	private String username;
+	private int steeringWheelHeight;
+	private int seatTilt;
 	
 	public long getId() {
 		return id;
@@ -46,6 +46,11 @@ public class CarPreference implements Serializable{
 	
 	public void setSeatTilt(int seatTilt) {
 		this.seatTilt = seatTilt;
+	}
+	
+	public void replaceFields(CarPreference carPreference) {
+		this.seatTilt = carPreference.getSeatTilt();
+		this.steeringWheelHeight = carPreference.getSteeringWheelHeight();
 	}
 	
 	public String toString() {
